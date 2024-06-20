@@ -130,27 +130,27 @@ steps:
     inputs:
       targetType: 'inline'
       script: |
-            $organization = "samcrossland"
-            $project = "Sams%20Azure%20Project"
             $repositoryId = "$(Build.Repository.ID)"
             $pullRequestId = "$(System.PullRequest.PullRequestId)"
             $accessToken = "$(SYSTEM_ACCESSTOKEN)"
             $totalViolations = "$(totalViolations)"
             $buildUrl = "$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)"
-            $encodedBuildUrl = $buildUrl -replace ' ', '%20' # Need to replace any spaces in project names with the right encoding
+            # Escape the BuildURL and Project name to handle spaces and special characters in there
+            $escapedBuildUrl = [System.Uri]::EscapeDataString($buildUrl)
+            $escapedProject = [System.Uri]::EscapeDataString("$(System.TeamProject)")
             $statusState = if("$(VIOLATIONS_EXCEEDED)" -eq 'true') { "failed" } else { "succeeded" }
             $status = @{
               "state" = $statusState
-              "description" = "Code analysis completed with $totalViolations violations. View build details at: $encodedBuildUrl"
-              "targetUrl" = $encodedBuildUrl
+              "description" = "Code analysis completed with $totalViolations violations. View build details at: $escapedbuildUrl"
+              "targetUrl" = $escapedBuildUrl
               "context" = @{
                 "name" = "Salesforce Code Analyzer - Scan"
                 "genre" = "SFCAPipeline"
               }
             }
             $statusJson = $status | ConvertTo-Json -Compress
-            $url = "https://dev.azure.com/$organization/$project/_apis/git/repositories/$repositoryId/pullRequests/$pullRequestId/statuses?api-version=7.1-preview.1"
-            Write-Host ""
+            Write-Host "Organization is '$(System.TeamFoundationCollectionUri)' and project is '$escapedProject'"
+            $url = "$(System.TeamFoundationCollectionUri)$escapedProject/_apis/git/repositories/$repositoryId/pullRequests/$pullRequestId/statuses?api-version=7.1-preview.1"
             Write-Host "Posting status to pull request at URL: '$url' with status JSON of: '$statusJson'"
             $headers = @{
               "Content-Type" = "application/json"
