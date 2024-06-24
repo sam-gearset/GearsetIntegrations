@@ -134,15 +134,14 @@ steps:
             $pullRequestId = "$(System.PullRequest.PullRequestId)"
             $accessToken = "$(SYSTEM_ACCESSTOKEN)"
             $totalViolations = "$(totalViolations)"
-            $buildUrl = "$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)"
-            # Escape the BuildURL and Project name to handle spaces and special characters in there
-            $escapedBuildUrl = [System.Uri]::EscapeDataString($buildUrl)
             $escapedProject = [System.Uri]::EscapeDataString("$(System.TeamProject)")
+            $buildUrl = "$(System.TeamFoundationCollectionUri)$escapedProject/_build/results?buildId=$(Build.BuildId)"
+            # Escape the BuildURL and Project name to handle spaces and special characters in there
             $statusState = if("$(VIOLATIONS_EXCEEDED)" -eq 'true') { "failed" } else { "succeeded" }
             $status = @{
               "state" = $statusState
-              "description" = "Code analysis completed with $totalViolations violations. View build details at: $escapedbuildUrl"
-              "targetUrl" = $escapedBuildUrl
+              "description" = "Code analysis completed with $totalViolations violations. View build details at: $buildUrl"
+              "targetUrl" = $buildUrl
               "context" = @{
                 "name" = "Salesforce Code Analyzer - Scan"
                 "genre" = "SFCAPipeline"
