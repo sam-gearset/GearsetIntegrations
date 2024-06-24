@@ -1,10 +1,10 @@
-pr:
-  branches:
-    include:
-      - uat # Change this to dictate which target branches will trigger the Pipeline to run - can be updated
+pr:                               # NOTE - This section is overruled in ADO by Build Validation rules on the Branch Policies
+  branches:                       # The triggering branches here listed for PR must exist in your repo, but actually triggering the Pipeline requires a Build Validation rule
+    include:                      # This section could be removed in place of those Build Validation rules, but keeps it consistent with other yml files and gives visibility into the triggering branches
+      - uat                       # More information here - https://learn.microsoft.com/en-us/azure/devops/pipelines/troubleshooting/troubleshoot-triggers?view=azure-devops#ui-settings-override-yaml-trigger-setting:~:text=for%20your%20repo.-,Pull,-request%20triggers%20not
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: ubuntu-latest          # Which VM to use to run this Pipeline
 
 variables:
     - name: SOURCE_BRANCH_NAME    # What's the source branch name, replaced with 'origin' for git diff-ing - not user-updatable
