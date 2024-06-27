@@ -82,7 +82,7 @@ steps:
     displayName: 'Install Salesforce CLI' # Latest version compared to older SFDX style
     condition: eq(variables['RELEVANT_FILES_FOUND'], 'true') # Only run this if we have valid files to scan
   - script: |
-      npm install -g @salesforce/sfdx-scanner@latest 
+      sf plugins install @salesforce/sfdx-scanner@latest
     displayName: 'Install Salesforce Code Analyzer Plugin' # Install the latest stable SFCA version
     condition: eq(variables['RELEVANT_FILES_FOUND'], 'true') # Only run this if we have valid files to scan
   - script: |
